@@ -21,17 +21,27 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
 
+    // Client-side validation
     if (!email || !password) {
       setError('Both fields are required');
       return;
     }
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      return;
+    }
 
     try {
-      // const res = await axios.post('', { email, password });
+      // Uncomment and replace with your API endpoint
+      // const res = await axios.post('https://your-api-endpoint/login', { email, password });
 
       setMsg('🎉 Logged in successfully!');
       setError('');
-      navigate('/dashboard'); // or any protected page
+      navigate('/dashboard'); // Redirect to the dashboard or any protected page
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.message || 'Invalid email or password');
@@ -63,7 +73,7 @@ const Login = () => {
           <button type="submit" style={styles.button}>Login</button>
           <p style={styles.loginText}>
             Don’t have an account?{' '}
-            <a href="/" style={styles.loginLink}>Sign Up</a>
+            <a href="/signup" style={styles.loginLink}>Sign Up</a>
           </p>
         </form>
       </div>
@@ -111,6 +121,9 @@ const styles = {
     fontSize: '16px',
     cursor: 'pointer',
     transition: 'background 0.3s',
+  },
+  buttonHover: {
+    backgroundColor: '#357ABD',
   },
   success: {
     color: 'green',
