@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const Signup = () => {
-  const [username, setUsername] = useState('');
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [msg, setMsg] = useState('');
@@ -18,7 +18,7 @@ const Signup = () => {
   const handleSignup = async (e) => {
     e.preventDefault();
 
-    if (!username || !email || !password || !confirmPass) {
+    if (  !email || !password || !confirmPass) {
       setError('All fields are required');
       return;
     }
@@ -35,24 +35,29 @@ const Signup = () => {
     }
 
     try {
-      // const response = await axios.post('', {
-      //   username: username,
-      //   email: email,
-      //   password: password
-      // });
-
+      const response = await axios.post('http://localhost:8000/api/register/', {
+       
+        email: email,
+        password: password
+      });
+      alert('✅ Registered successfully!');
       setMsg('🎉 Account created successfully!');
       setError('');
-      setUsername('');
       setEmail('');
       setPassword('');
       navigate('/login', { state: { msg: '✅ Registered successfully' } });
     } 
     catch (err) {
       console.error(err);
-      setError(err.response?.data?.message || 'Something went wrong');
+      // If Django sends "email already registered", show it
+      if (err.response?.data?.email) {
+        setError(err.response.data.email[0]); // Because it's usually a list
+      } else {
+        setError(err.response?.data?.message || 'Something went wrong');
+      }
       setMsg('');
     }
+    
   };
 
   return (
@@ -62,13 +67,7 @@ const Signup = () => {
         {msg && <p style={styles.success}>{msg}</p>}
         {error && <p style={styles.error}>{error}</p>}
         <form onSubmit={handleSignup} style={styles.form}>
-          <input
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            style={styles.input}
-          />
+
           <input
             type="email"
             placeholder="Email"
